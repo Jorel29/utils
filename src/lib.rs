@@ -1,15 +1,15 @@
 use vector::Vector;
 #[derive(Clone, Copy)]
-struct RotMatrix {
-    c0: Vector,
-    c1: Vector,
-    c2: Vector,
+pub struct Matrix {
+    pub c0: Vector,
+    pub c1: Vector,
+    pub c2: Vector,
 }
 
 #[macro_export]
 macro_rules! XRotMatrix {
     ($angle:expr) => {
-        RotMatrix{
+        Matrix{
             c0: Vector {x: 1.0 , y: 0.0 ,z: 0.0},
             c1: Vector {x: 0.0 , y: f64::cos($angle), z: f64::sin($angle)},
             c2: Vector {x: 0.0, y: -1.0*f64::sin($angle), z: f64::cos($angle)},  
@@ -20,10 +20,10 @@ macro_rules! XRotMatrix {
 #[macro_export]
 macro_rules! YRotMatrix {
     ($angle:expr) => {
-        RotMatrix{
+        Matrix{
             c0: Vector {x: f64::cos($angle) , y: 0.0 ,z: -1.0*f64::sin($angle)},
             c1: Vector {x: 0.0 , y: 1.0, z: 0.0},
-            c2: Vector {x: f64:sin($angle), y: 0.0, z: f64::cos($angle)},  
+            c2: Vector {x: f64::sin($angle), y: 0.0, z: f64::cos($angle)},  
         }
     };
 }
@@ -31,7 +31,7 @@ macro_rules! YRotMatrix {
 #[macro_export]
 macro_rules! ZRotMatrix {
     ($angle:expr) => {
-        RotMatrix{
+        Matrix{
             c0: Vector {x: f64::cos($angle) , y: f64::sin($angle) , z: 0.0},
             c1: Vector {x: -1.0*f64::sin($angle) , y: f64::cos($angle), z: 0.0},
             c2: Vector {x: 0.0 , y: 0.0, z: 1.0},
@@ -68,9 +68,6 @@ impl CapsuleCollision {
     pub fn within_bounds(&self, pos: &Vector) -> bool{
         
         
-        let rot_x = self.rotation.x;
-        let rot_y = self.rotation.y;
-        let rot_z = self.rotation.z;
 
         
         
@@ -104,7 +101,7 @@ impl CapsuleCollision {
 }
 
 
-struct SphereCollision {
+pub struct SphereCollision {
     pub radius: f64,
     pub position: Vector,
 }
