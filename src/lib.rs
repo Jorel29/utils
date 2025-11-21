@@ -1,18 +1,18 @@
 use vector::Vector;
 #[derive(Clone, Copy)]
 pub struct Matrix {
-    pub c0: Vector,
-    pub c1: Vector,
-    pub c2: Vector,
+    pub r0: Vector,
+    pub r1: Vector,
+    pub r2: Vector,
 }
 
 #[macro_export]
 macro_rules! XRotMatrix {
     ($angle:expr) => {
         Matrix{
-            c0: Vector {x: 1.0 , y: 0.0 ,z: 0.0},
-            c1: Vector {x: 0.0 , y: f64::cos($angle), z: f64::sin($angle)},
-            c2: Vector {x: 0.0, y: -1.0*f64::sin($angle), z: f64::cos($angle)},  
+            r0: Vector {x: 1.0 , y: 0.0 ,z: 0.0},
+            r1: Vector {x: 0.0 , y: f64::cos($angle), z: -1.0*f64::sin($angle)},
+            r2: Vector {x: 0.0, y: f64::sin($angle), z: f64::cos($angle)},  
         }
     };
 }
@@ -21,9 +21,9 @@ macro_rules! XRotMatrix {
 macro_rules! YRotMatrix {
     ($angle:expr) => {
         Matrix{
-            c0: Vector {x: f64::cos($angle) , y: 0.0 ,z: -1.0*f64::sin($angle)},
-            c1: Vector {x: 0.0 , y: 1.0, z: 0.0},
-            c2: Vector {x: f64::sin($angle), y: 0.0, z: f64::cos($angle)},  
+            r0: Vector {x: f64::cos($angle) , y: 0.0 ,z: -f64::sin($angle)},
+            r1: Vector {x: 0.0 , y: 1.0, z: 0.0},
+            r2: Vector {x: -1.0*f64::sin($angle), y: 0.0, z: f64::cos($angle)},  
         }
     };
 }
@@ -32,9 +32,9 @@ macro_rules! YRotMatrix {
 macro_rules! ZRotMatrix {
     ($angle:expr) => {
         Matrix{
-            c0: Vector {x: f64::cos($angle) , y: f64::sin($angle) , z: 0.0},
-            c1: Vector {x: -1.0*f64::sin($angle) , y: f64::cos($angle), z: 0.0},
-            c2: Vector {x: 0.0 , y: 0.0, z: 1.0},
+            r0: Vector {x: f64::cos($angle) , y: -1.0*f64::sin($angle) , z: 0.0},
+            r1: Vector {x: f64::sin($angle) , y: f64::cos($angle), z: 0.0},
+            r2: Vector {x: 0.0 , y: 0.0, z: 1.0},
         }
     };
 }
@@ -46,8 +46,26 @@ pub fn apply_euler_xyz_rotatation_3d(vec: Vector, angle: Vector) -> Vector{
     let y_rot = YRotMatrix!(angle.y);
     let z_rot = ZRotMatrix!(angle.z);
 
+    //apply x axis rotation
+    let x_prime = Vector::dot(&x_rot.r0, &vec);
+    let y_prime = Vector::dot(&x_rot.r1, &vec);
+    let z_prime = Vector::dot(&x_rot.r2, &vec);
 
-    vec
+    let vec_prime = Vector{x: x_prime, y: y_prime, z: z_prime};
+
+    //apply y axis rotation
+    let x_2prime = Vector::dot(&y_rot.r0, &vec_prime);
+    let y_2prime = Vector::dot(&y_rot.r1, &vec_prime);
+    let z_2prime = Vector::dot(&y_rot.r2, &vec_prime);
+
+    let vec_2prime = Vector{x: x_2prime, y: y_2prime, z: z_2prime};
+
+    //apply z axis rotation
+    let x_3prime = Vector::dot(&z_rot.r0, &vec_2prime);
+    let y_3prime = Vector::dot(&z_rot.r1, &vec_2prime);
+    let z_3prime = Vector::dot(&z_rot.r2, &vec_2prime);
+
+    Vector { x: x_3prime, y: y_3prime, z: z_3prime }
 }
 
 
