@@ -39,6 +39,23 @@ macro_rules! ZRotMatrix {
     };
 }
 
+#[macro_export]
+macro_rules! ZYXRotMatrix {
+    ($yaw:expr, $pitch:expr, $roll:expr) => {
+       Matrix{
+        r0: Vector{ x: f64::cos($yaw)*f64::cos($pitch),
+                    y: f64::cos($yaw)*f64::sin($pitch)*f64::sin($roll) - f64::sin($yaw)*f64::cos($roll),
+                    z: f64::cos($yaw)*f64::sin($pitch)*f64::cos($roll) + f64::sin($yaw)*f64::sin($roll), },
+        r1: Vector{ x: f64::sin($yaw)*f64::cos($pitch),
+                    y: f64::sin($yaw)*f64::sin($pitch)*f64::sin($roll) + f64::cos($yaw)*f64::cos($roll),
+                    z: f64::sin($yaw)*f64::sin($pitch)*f64::cos($roll) - f64::cos($yaw)*f64::sin($roll),},
+        r2: Vector{ x: -1.0*f64::sin($pitch),
+                    y: f64::cos($pitch)*f64::sin($roll),
+                    z: f64::cos($pitch)*f64::cos($roll),},
+       } 
+    };
+}
+
 pub fn apply_euler_xyz_rotatation_3d(vec: Vector, angle: Vector) -> Vector{
 
     
