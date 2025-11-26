@@ -85,7 +85,7 @@ pub fn apply_euler_xyz_rotatation_3d(vec: Vector, angle: Vector) -> Vector{
     Vector { x: x_3prime, y: y_3prime, z: z_3prime }
 }
 
-
+#[derive(Debug)]
 pub struct CapsuleCollision{
     pub half_height: f64,
     pub radius: f64,
@@ -135,7 +135,7 @@ impl CapsuleCollision {
 
 }
 
-
+#[derive(Debug)]
 pub struct SphereCollision {
     pub radius: f64,
     pub position: Vector,
