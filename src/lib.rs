@@ -1,6 +1,8 @@
-use std::path::Iter;
 
+
+use std::hash::Hash;
 use vector::Vec3;
+use hashbrown::{HashMap};
 #[derive(Clone, Copy)]
 pub struct Matrix {
     pub r0: Vec3,
@@ -158,9 +160,9 @@ impl SphereCollision{
         }
     }
 }
-
+#[derive(Debug)]
 pub struct SparseSet<T>{
-    dense: Vec<(usize, T)>,
+    dense: Vec<T>,
     sparse: Vec<Option<usize>>
 }
 
@@ -173,7 +175,7 @@ impl <T> SparseSet<T>{
     }
 
     pub fn push(&mut self, id:usize, item: T){
-        self.dense.push((id, item));
+        self.dense.push(item);
         self.sparse[id]= Some(id);
     }
 
@@ -183,7 +185,7 @@ impl <T> SparseSet<T>{
         }
     }
 
-    pub fn get(&self, id:usize)-> Option<&(usize, T)>{
+    pub fn get(&self, id:usize)-> Option<&T>{
         if let Some(ind) = self.sparse[id]{
             self.dense.get(ind)
         }else{
@@ -191,7 +193,7 @@ impl <T> SparseSet<T>{
         }
     }
 
-    pub fn get_mut(&mut self, id:usize) -> Option<&mut (usize, T)>{
+    pub fn get_mut(&mut self, id:usize) -> Option<&mut T>{
         if let Some(ind) = self.sparse[id]{
             self.dense.get_mut(ind)
         }else{
@@ -199,15 +201,72 @@ impl <T> SparseSet<T>{
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &(usize, T)>{
+    pub fn iter(&self) -> impl Iterator<Item = &T>{
         self.dense.iter()
     }
 
-    pub fn iter_mut(&mut self)-> impl Iterator<Item = &mut(usize, T)>{
+    pub fn iter_mut(&mut self)-> impl Iterator<Item = &mut T>{
         self.dense.iter_mut()
     }
 }
 
+// Wrapper for Hashmap
+pub struct Table<K, V>
+where 
+    K: Hash + Eq
+{
+    id: u32,
+    table: HashMap<K, V>
+}
+
+impl <K, V> Table<K, V>
+where 
+    K: Hash + Eq
+{
+    pub fn new(table_id: u32)->Self{
+        Self { 
+            id: table_id,
+            table: HashMap::new() 
+        }
+    }
+
+    pub fn insert(&mut self, k: K, v: V) -> Option<V>{
+        self.table.insert(k, v)
+    }
+
+    pub fn remove(&mut self, k: &K) -> Option<V>{
+        self.table.remove(k)
+    }
+
+    pub fn remove_entry(&mut self, k: &K) -> Option<(K, V)>{
+        self.table.remove_entry(k)
+    }
+
+    pub fn len(&self) -> usize {
+        self.table.len()
+    }
+
+    pub fn get(&self, k: &K)-> Option<&V>{
+        self.table.get(k)
+    }
+
+    pub fn get_key_value(&self, k: &K)-> Option<(&K,&V)>{
+        self.table.get_key_value(k)
+    }
+
+    pub fn get_mut(&mut self, k: &K)->Option<&mut V>{
+        self.table.get_mut(k)
+    }
+
+    pub fn get_key_value_mut(&mut self, k: &K) -> Option<(&K, &mut V)>{
+        self.table.get_key_value_mut(k)
+    }
+
+    pub fn id(&self) -> u32{
+        self.id
+    }
+
+}
 
 
 #[cfg(test)]
