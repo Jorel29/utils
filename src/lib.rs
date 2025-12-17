@@ -174,6 +174,10 @@ impl <T> SparseSet<T>{
         }
     }
 
+    pub fn dense_mut(&mut self) -> &mut Vec<T>{
+        &mut self.dense
+    }
+
     pub fn push(&mut self, id:usize, item: T){
         self.dense.push(item);
         self.sparse[id]= Some(id);
