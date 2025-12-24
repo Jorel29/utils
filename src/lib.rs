@@ -3,11 +3,18 @@
 use std::hash::Hash;
 use vector::Vec3;
 use hashbrown::{HashMap};
-#[derive(Clone, Copy)]
+use std::fmt::Display;
+#[derive(Clone, Copy, Debug)]
 pub struct Matrix {
     pub r0: Vec3,
     pub r1: Vec3,
     pub r2: Vec3,
+}
+
+impl Display for Matrix{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}\n{}\n{}\n", self.r0, self.r1, self.r2)
+    }
 }
 
 #[macro_export]
@@ -25,7 +32,7 @@ macro_rules! XRotMatrix {
 macro_rules! YRotMatrix {
     ($angle:expr) => {
         Matrix{
-            r0: Vec3 {x: f64::cos($angle) , y: 0.0 ,z: -f64::sin($angle)},
+            r0: Vec3 {x: f64::cos($angle) , y: 0.0 ,z: f64::sin($angle)},
             r1: Vec3 {x: 0.0 , y: 1.0, z: 0.0},
             r2: Vec3 {x: -1.0*f64::sin($angle), y: 0.0, z: f64::cos($angle)},  
         }
